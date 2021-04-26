@@ -1,0 +1,239 @@
+---
+params: 
+  title: ""
+  publication_date: ""
+  doi: ""
+output: 
+  html_document:
+    anchor_sections: false
+    theme: null
+    highlight: null
+    mathjax: null
+    css: ["style.css", "https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700&display=swap"]
+    self_contained: true
+title: "`r params$title`"
+---
+
+```{r general-setup, include=FALSE}
+## This file contains the FRENCH version of the data story 
+
+# Set general chunk options
+knitr::opts_chunk$set(echo = FALSE, fig.showtext = TRUE, fig.retina = 3, 
+                      fig.align = "center", warning = FALSE, message = FALSE)
+
+# Install pacman package if needed
+if (!require("pacman")) {
+  install.packages("pacman")
+}
+
+# Install snf.datastory package if not available, otherwise load it
+if (!require("snf.datastory")) {
+  if (!require("devtools")) {
+    install.packages("devtools")
+  }
+  install_github("snsf-data/snf.datastory")
+}
+
+# Load packages
+p_load(tidyverse,
+       lubridate,
+       scales, 
+       conflicted, 
+       jsonlite,
+       here)
+
+# Conflict preferences
+conflict_prefer("filter", "dplyr")
+conflict_prefer("get_datastory_theme", "snf.datastory")
+conflict_prefer("get_datastory_scheme", "snf.datastory")
+
+# Increase showtext package font resolution
+showtext_opts(dpi = 320)
+
+# Set the locale for date formatting (Windows)
+Sys.setlocale("LC_TIME", "French")
+```
+
+```{r print-header-infos, results='asis'}
+# Add publication date to header
+cat(format(as_datetime(params$publication_date), "%d.%m.%Y"))
+
+# Register the Google font (same as Data Portal, is not loaded twice)
+cat(paste0("<link href='https://fonts.googleapis.com/css?family=", 
+           "Source+Sans+Pro:400,700&display=swap' rel='stylesheet'>"))
+```
+
+```{r story-specific-setup, include=FALSE}
+# Set story-specific variables etc. here
+
+# E.g. loading data...
+
+```
+
+
+<!-- Short lead (2-3 sentences) in bold -->
+
+__Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.__
+
+Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.   
+
+### Magna aliquam erat volutpat
+
+Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.   
+
+
+<div class="plot-box">
+
+<div class="plot-title">Relationship of carat and price of diamonds</div>
+
+```{r example-plot-1, out.width="100%", fig.height=4}
+# Example of an interactive ggiraph plot, created out of a ggplot plot
+
+# Create ggplot plot
+ggplot_plot <- diamonds %>%  
+  sample_n(1000) %>%  
+  mutate(data_id = row_number()) %>% 
+  ggplot(aes(x = carat, y = price, fill = color,
+             # Define tooltip text for ggiraph
+             tooltip = paste0("carat: ", carat, "<br>", 
+                           "cut: ", cut, "<br>", 
+                           "color: ", color, "<br>", 
+                           "depth: ", depth, "<br>", 
+                           "<b>price: ", price, "</b>"), 
+             # Highlight all of the points with the same color when hovering
+             # over it (ggiraph)
+             data_id = color)) + 
+  geom_point_interactive(shape = 21, size = 2.5, stroke = 0.2, 
+                         color = "white") + 
+  get_datastory_theme(tick_axis = c("x", "y"), 
+                      remove_plot_margin = TRUE) + 
+  guides(fill = guide_legend(nrow = 1)) 
+
+# Create ggiraph object
+girafe(ggobj = ggplot_plot, 
+       height_svg = 4, 
+       options = list(
+         opts_toolbar(saveaspng = FALSE),
+         opts_hover(css = "fill:#F75858;stroke:#F75858;"),
+         opts_tooltip(
+           css = get_ggiraph_tooltip_css(),
+           opacity = 0.8,
+           delay_mouseover = 0,
+           delay_mouseout = 0
+         )
+       ))
+```
+
+<div class="caption">
+Data: [Diamonds dataset in ggplot2, a dataset containing the prices and other attributes diamonds](https://ggplot2.tidyverse.org/reference/diamonds.html).
+</div>
+</div>
+
+Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.   
+
+### Quis nostrud exerci tation
+
+Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.   
+
+
+### Exerci tation ullamcorper suscipit
+
+Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.   
+
+
+<div class="quote">
+  <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis.</p>
+</div>
+
+Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.   
+
+Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.   
+
+<div class="plot-box">
+
+<div class="plot-title">Relationship of carat and price of diamonds</div>
+
+```{r example-plot-2, out.width="100%", fig.height=3.5}
+# Another Example of an interactive ggiraph plot, created out of a ggplot plot
+
+# Create ggplot plot
+ggplot_plot <- diamonds %>%  
+  # Only good-quality diamonds
+  filter(!(cut %in% c("Fair", "Good"))) %>% 
+  sample_n(1000) %>%  
+  count(color, cut) %>% 
+  mutate(data_id = row_number()) %>%
+  ggplot(aes(x = color, y = n, fill = cut,
+             # Define tooltip text for ggiraph
+             tooltip = paste0("cut: ", cut, "<br>", 
+                              "color: ", color, "<br>", 
+                              "number: ", n), 
+             # Highlight all of the points with the same color when hovering
+             # over it (ggiraph)
+             data_id = data_id)) + 
+  # Hack: Add a geom_col under the interactive one, only to be able to provide
+  # correct looking legend items (round although bar chart), 
+  # geom_col_interactive does not take the argument 'key_glyph'
+  geom_col(width = 0.1, size = 0.1,
+           # Draw point instead of square symbol
+           key_glyph = draw_key_dotplot
+  ) +
+  # Add ggiraph column, don't show it in legend as we're using points (and not 
+  # squares) according to the style guide there (see hack before)
+  geom_col_interactive(color = "white", show.legend = FALSE) + 
+  scale_fill_manual(values = get_datastory_scheme()) +
+  get_datastory_theme(tick_axis = c("y"), 
+                      remove_plot_margin = TRUE)
+
+# Create ggiraph object
+girafe(ggobj = ggplot_plot, 
+       height_svg = 3.5, 
+       options = list(
+         opts_toolbar(saveaspng = FALSE),
+         opts_hover(css = "fill:#F75858;stroke:white;"),
+         opts_tooltip(
+           css = get_ggiraph_tooltip_css(),
+           opacity = 0.8,
+           delay_mouseover = 0,
+           delay_mouseout = 0
+         )
+       ))
+```
+
+<div class="caption">
+Data: [Diamonds dataset in ggplot2, a dataset containing the prices and other attributes diamonds](https://ggplot2.tidyverse.org/reference/diamonds.html).
+</div>
+</div>
+
+Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.  
+
+<div class="info-box">
+
+### Data and methods
+
+<p>Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.</p>
+
+* Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+* At vero eos et accusam et justo duo dolores et ea rebum.
+* Lorem ipsum dolor sit amet, consetetur sadipscing elitr.
+
+</div>
+
+Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.   
+
+Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis.   
+
+<p>
+  <a class="download-button" href="">download-button</a>
+  <a class="download-button-blue" href="">blue</a>
+  <a class="download-button-secondary" href="">secondary</a>
+</p>
+<p>
+  <a href="#" class="button">button</a>
+  <a href="#" class="button-blue">button-blue</a>
+  <a href="#" class="button-secondary">button-secondary</a>
+</p>
+
+<div class="doi-box">
+Lastname, Firstname (Year). Title. SNSF Data Stories. https://doi.org/10.1080/16549716.2020.1838241
+</div>
