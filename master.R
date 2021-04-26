@@ -26,7 +26,7 @@ datastory_name_fr <- "datastory-modele"
 ## Meta data
 
 # Contact persons, always (first name + last name)
-contact_person <- c("Anna EN language version Müller", "Hans Meier")
+contact_person <- c("Anna Müller", "Hans Meier")
 # Mail address to be displayed as contact persons, put "datastories@snf.ch" for 
 # every name of a contact person listed above.
 contact_person_mail <- c("datastories@snf.ch", "datastories@snf.ch")
