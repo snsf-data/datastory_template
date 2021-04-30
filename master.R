@@ -65,14 +65,17 @@ tags_ids <- c(60, 70, 80)
 # Install pacman package if needed
 if (!require("pacman")) {
   install.packages("pacman")
+  library(pacman)
 }
 
 # Install snf.datastory package if not available, otherwise load it
 if (!require("snf.datastory")) {
   if (!require("devtools")) {
     install.packages("devtools")
+    library(devtools)
   }
   install_github("snsf-data/snf.datastory")
+  library(snf.datastory)
 }
 
 # Load packages
