@@ -1,5 +1,7 @@
 # This script produces all the files required to deploy an SNSF data story. 
 # 
+# Data story template: https://github.com/snsf-data/datastory_template
+# 
 # By running this file, the following components of a data story are generated
 # and stored in the output directory: 
 # 
