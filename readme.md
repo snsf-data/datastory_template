@@ -14,3 +14,7 @@ of the files that is required for a publication as a data story.
 ## Contact
 
 For questions, feel free to contact Julius Mattern at julius.mattern@snf.ch.
+
+## License
+
+MIT © Swiss National Science Foundation
