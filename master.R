@@ -23,8 +23,15 @@ datastory_name_de <- "datastory-vorlage"
 datastory_name_en <- "datastory-template"
 datastory_name_fr <- "datastory-modele"
 
-## Meta data
-
+# English title and lead of the story (Mandatory, even if there is no EN version)
+title_en <- "Title" 
+lead_en <- "English lead of story" 
+# German title and lead of the story (Mandatory, even if there is no DE version)
+title_de <- "Titel" 
+lead_de <- "Deutscher Lead der Story" 
+# French title and lead of the story (Mandatory, even if there is no FR version)
+title_fr <- "Titre"
+lead_fr <- "Story lead en français" 
 # Contact persons, always (first name + last name)
 contact_person <- c("Anna Müller", "Hans Meier")
 # Mail address to be displayed as contact persons, put "datastories@snf.ch" for 
@@ -38,18 +45,6 @@ datastory_category <- "standard"
 publication_date <- "2021-01-01 08:00:00"
 # Available language versions in lowercase, possible: "en", "de", "fr".
 languages <- c("en", "de", "fr") 
-# English title of the story (Mandatory, even if there is no EN story version)
-title_en <- "Title" 
-# German title of the story (Mandatory, even if there is no DE story version)
-title_de <- "Titel" 
-# French title of the story (Mandatory, even if there is no FR story version)
-title_fr <- "Titre"
-# English Lead of the story (Mandatory, even if there is no EN story version)
-lead_en <- "English lead of story" 
-# German Lead of the story (Mandatory, even if there is no DE story version)
-lead_de <- "Deutscher Lead der Story" 
-# French Lead of the story (Mandatory, even if there is no FR story version)
-lead_fr <- "Story lead en français" 
 # Whether this story should be a "Feature Story" story (true/false)
 feature_story <- FALSE
 # DOI of the story (optional)
