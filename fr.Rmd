@@ -52,6 +52,20 @@ showtext_opts(dpi = 320)
 
 # Set the locale for date formatting (Windows)
 Sys.setlocale("LC_TIME", "French")
+
+# Create function to print number with local language-specific format 
+print_num <- function(x) snf.datastory::print_num(x, lang = "fr")
+
+# Knitr hook for local formatting of printed numbers
+knitr::knit_hooks$set(
+  inline <- function(x) {
+    if (!is.numeric(x)) {
+      x
+    } else {
+      print_num(x)
+    }
+  }
+)
 ```
 
 ```{r print-header-infos, results='asis'}
