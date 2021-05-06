@@ -43,7 +43,8 @@ p_load(tidyverse,
        scales, 
        conflicted, 
        jsonlite,
-       here)
+       here, 
+       ggiraph)
 
 # Conflict preferences
 conflict_prefer("filter", "dplyr")
