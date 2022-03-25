@@ -22,11 +22,6 @@ title: "`r params$title`"
 knitr::opts_chunk$set(echo = FALSE, fig.showtext = TRUE, fig.retina = 3, 
                       fig.align = "center", warning = FALSE, message = FALSE)
 
-# Install pacman package if needed
-if (!require("pacman")) {
-  install.packages("pacman")
-  library(pacman)
-}
 
 # Install snf.datastory package if not available, otherwise load it
 if (!require("snf.datastory")) {
@@ -39,13 +34,13 @@ if (!require("snf.datastory")) {
 }
 
 # Load packages
-p_load(tidyverse,
-       lubridate,
-       scales, 
-       conflicted, 
-       jsonlite,
-       here, 
-       ggiraph)
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(conflicted) 
+library(jsonlite)
+library(here)
+library(ggiraph)
 
 # Conflict preferences
 conflict_prefer("filter", "dplyr")
@@ -122,14 +117,15 @@ ggplot_plot <- diamonds %>%
                          color = "white") + 
   get_datastory_theme(tick_axis = c("x", "y"), 
                       remove_plot_margin = TRUE) + 
-  guides(fill = guide_legend(nrow = 1)) 
+  guides(fill = guide_legend(nrow = 1)) +
+  scale_fill_manual(values = get_datastory_scheme())
 
 # Create ggiraph object
 girafe(ggobj = ggplot_plot, 
        height_svg = 4, 
        options = list(
          opts_toolbar(saveaspng = FALSE),
-         opts_hover(css = "fill:#F75858;stroke:#F75858;"),
+         opts_hover(css = "fill:#F08262;stroke:#F08262;"),
          opts_tooltip(
            css = get_ggiraph_tooltip_css(),
            opacity = 0.8,
@@ -205,7 +201,7 @@ girafe(ggobj = ggplot_plot,
        height_svg = 3.5, 
        options = list(
          opts_toolbar(saveaspng = FALSE),
-         opts_hover(css = "fill:#F75858;stroke:white;"),
+         opts_hover(css = "fill:#F08262;stroke:white;"),
          opts_tooltip(
            css = get_ggiraph_tooltip_css(),
            opacity = 0.8,
@@ -249,6 +245,4 @@ Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie co
   <a href="#" class="button-secondary">button-secondary</a>
 </p>
 
-<div class="doi-box">
-Lastname, Firstname (Year). Title. SNSF Data Stories. https://doi.org/10.1080/16549716.2020.1838241
-</div>
+Daten, Text und Code dieser Datengeschichte sind <a href="https://github.com/snsf-data/datastory_xxx" target="_blank">auf Github verfügbar</a> und <a href="https://doi.org/10.46446/datastory.xxx" target="_blank">auf Zenodo archiviert</a>. DOI: 10.46446/datastory.xxx

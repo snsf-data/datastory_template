@@ -21,17 +21,17 @@ datastory_name <- "datastory_template"
 # Language-specific names, do adapt! (used for vanity URL! Format: all 
 # lowercase, minus as white-space (!) and no special characters, no special 
 # characters etc.)
-datastory_name_de <- "datastory-vorlage"
 datastory_name_en <- "datastory-template"
+datastory_name_de <- "datastory-vorlage"
 datastory_name_fr <- "datastory-modele"
 
-# English title and lead of the story (Mandatory, even if there is no EN version)
+# English title and lead of the story (Mandatory, even if no EN version)
 title_en <- "Title" 
 lead_en <- "English lead of story" 
-# German title and lead of the story (Mandatory, even if there is no DE version)
+# German title and lead of the story (Mandatory, even if no DE version)
 title_de <- "Titel" 
 lead_de <- "Deutscher Lead der Story" 
-# French title and lead of the story (Mandatory, even if there is no FR version)
+# French title and lead of the story (Mandatory, even if no FR version)
 title_fr <- "Titre"
 lead_fr <- "Story lead en français" 
 # Contact persons, always (first name + last name)
@@ -47,10 +47,11 @@ datastory_category <- "standard"
 publication_date <- "2021-01-01 08:00:00"
 # Available language versions in lowercase, possible: "en", "de", "fr".
 languages <- c("en", "de", "fr") 
-# Whether this story should be a "Feature Story" story (true/false)
+# Whether this story should be a "Feature Story" story
 feature_story <- FALSE
-# DOI of the story (optional)
-doi <- "" 
+# DOI URL of the story (optional) -> e.g. must be an URL, is used as link!
+# e.g. https://doi.org/10.46446/datastory.leaky-pipeline
+doi_url <- "" 
 # URL to Github page (optional)
 github_url <- "" 
 # Put Tag IDs here. Only choose already existing tags. 
@@ -58,12 +59,6 @@ tags_ids <- c(60, 70, 80)
 
 # IMPORTANT: Put a title image (as .jpg) into the output directory. 
 # example: "output/datastory-template.jpg"
-
-# Install pacman package if needed
-if (!require("pacman")) {
-  install.packages("pacman")
-  library(pacman)
-}
 
 # Install snf.datastory package if not available, otherwise load it
 if (!require("snf.datastory")) {
@@ -76,11 +71,11 @@ if (!require("snf.datastory")) {
 }
 
 # Load packages
-p_load(tidyverse,
-       scales, 
-       conflicted, 
-       jsonlite, 
-       here)
+library(tidyverse)
+library(scales)
+library(conflicted)
+library(jsonlite)
+library(here)
 
 # Conflict preferences
 conflict_prefer("filter", "dplyr")
@@ -133,7 +128,7 @@ tibble(
   author_url = paste(contact_person_mail, collapse = ";"), 
   top_story = feature_story, 
   github_url = github_url, 
-  doi = doi
+  doi = doi_url
 ) %>%  
   toJSON() %>%  
   write_lines(here("output", datastory_name, "metadata.json"))
@@ -152,7 +147,7 @@ for (idx in seq_len(length(languages))) {
     params = list(
       title = get(paste0("title_", current_lang)),
       publication_date = publication_date,
-      doi = doi
+      doi = doi_url
     ),
     envir = new.env()
   )
