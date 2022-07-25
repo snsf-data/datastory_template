@@ -19,8 +19,10 @@ title: "`r params$title`"
 ## This file contains the GERMAN version of the data story
 
 # Set general chunk options
-knitr::opts_chunk$set(echo = FALSE, fig.showtext = TRUE, fig.retina = 3, 
-                      fig.align = "center", warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(
+  echo = FALSE, fig.showtext = TRUE, fig.retina = 3,
+  fig.align = "center", warning = FALSE, message = FALSE
+)
 
 
 # Install snf.datastory package if not available, otherwise load it
@@ -37,9 +39,10 @@ if (!require("snf.datastory")) {
 library(tidyverse)
 library(lubridate)
 library(scales)
-library(conflicted) 
+library(conflicted)
 library(jsonlite)
 library(here)
+library(glue)
 library(ggiraph)
 
 # Conflict preferences
@@ -53,7 +56,7 @@ showtext_opts(dpi = 320)
 # Set the locale for date formatting (Windows)
 Sys.setlocale("LC_TIME", "German")
 
-# Create function to print number with local language-specific format 
+# Create function to print number with local language-specific format
 print_num <- function(x) snf.datastory::print_num(x, lang = "de")
 
 # Knitr hook for local formatting of printed numbers
@@ -77,7 +80,6 @@ cat(format(as_datetime(params$publication_date), "%d.%m.%Y"))
 # Set story-specific variables etc. here
 
 # E.g. loading data...
-
 ```
 
 
@@ -100,39 +102,49 @@ Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie co
 # Example of an interactive ggiraph plot, created out of a ggplot plot
 
 # Create ggplot plot
-ggplot_plot <- diamonds %>%  
-  sample_n(1000) %>%  
-  mutate(data_id = row_number()) %>% 
-  ggplot(aes(x = carat, y = price, fill = color,
-             # Define tooltip text for ggiraph
-             tooltip = paste0("carat: ", carat, "<br>", 
-                           "cut: ", cut, "<br>", 
-                           "color: ", color, "<br>", 
-                           "depth: ", depth, "<br>", 
-                           "<b>price: ", price, "</b>"), 
-             # Highlight all of the points with the same color when hovering
-             # over it (ggiraph)
-             data_id = color)) + 
-  geom_point_interactive(shape = 21, size = 2.5, stroke = 0.2, 
-                         color = "white") + 
-  get_datastory_theme(tick_axis = c("x", "y"), 
-                      remove_plot_margin = TRUE) + 
+ggplot_plot <- diamonds %>%
+  sample_n(1000) %>%
+  mutate(data_id = row_number()) %>%
+  ggplot(aes(
+    x = carat, y = price, fill = color,
+    # Define tooltip text for ggiraph
+    tooltip = glue(
+      "carat: {carat}<br>",
+      "cut: {cut}<br>",
+      "color: {color}<br>",
+      "depth: {depth}<br>",
+      "<b>price: {price}</b>"
+    ),
+    # Highlight all of the points with the same color when hovering
+    # over it (ggiraph)
+    data_id = color
+  )) +
+  geom_point_interactive(
+    shape = 21, size = 2.5, stroke = 0.2,
+    color = "white"
+  ) +
+  get_datastory_theme(
+    tick_axis = c("x", "y"),
+    remove_plot_margin = TRUE
+  ) +
   guides(fill = guide_legend(nrow = 1)) +
   scale_fill_manual(values = get_datastory_scheme())
 
 # Create ggiraph object
-girafe(ggobj = ggplot_plot, 
-       height_svg = 4, 
-       options = list(
-         opts_toolbar(saveaspng = FALSE),
-         opts_hover(css = "fill:#F08262;stroke:#F08262;"),
-         opts_tooltip(
-           css = get_ggiraph_tooltip_css(),
-           opacity = 0.8,
-           delay_mouseover = 0,
-           delay_mouseout = 0
-         )
-       ))
+girafe(
+  ggobj = ggplot_plot,
+  height_svg = 4,
+  options = list(
+    opts_toolbar(saveaspng = FALSE),
+    opts_hover(css = "fill:#F08262;stroke:#F08262;"),
+    opts_tooltip(
+      css = get_ggiraph_tooltip_css(),
+      opacity = 0.8,
+      delay_mouseover = 0,
+      delay_mouseout = 0
+    )
+  )
+)
 ```
 
 <div class="caption">
@@ -168,47 +180,56 @@ Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming 
 # Another Example of an interactive ggiraph plot, created out of a ggplot plot
 
 # Create ggplot plot
-ggplot_plot <- diamonds %>%  
+ggplot_plot <- diamonds %>%
   # Only good-quality diamonds
-  filter(!(cut %in% c("Fair", "Good"))) %>% 
-  sample_n(1000) %>%  
-  count(color, cut) %>% 
+  filter(!(cut %in% c("Fair", "Good"))) %>%
+  sample_n(1000) %>%
+  count(color, cut) %>%
   mutate(data_id = row_number()) %>%
-  ggplot(aes(x = color, y = n, fill = cut,
-             # Define tooltip text for ggiraph
-             tooltip = paste0("cut: ", cut, "<br>", 
-                              "color: ", color, "<br>", 
-                              "number: ", n), 
-             # Highlight all of the points with the same color when hovering
-             # over it (ggiraph)
-             data_id = data_id)) + 
+  ggplot(aes(
+    x = color, y = n, fill = cut,
+    # Define tooltip text for ggiraph
+    tooltip = glue(
+      "cut: {cut}<br>",
+      "color: {color}<br>",
+      "number: {n}"
+    ),
+    # Highlight all of the points with the same color when hovering
+    # over it (ggiraph)
+    data_id = data_id
+  )) +
   # Hack: Add a geom_col under the interactive one, only to be able to provide
-  # correct looking legend items (round although bar chart), 
+  # correct looking legend items (round although bar chart),
   # geom_col_interactive does not take the argument 'key_glyph'
-  geom_col(width = 0.1, size = 0.1,
-           # Draw point instead of square symbol
-           key_glyph = draw_key_dotplot
+  geom_col(
+    width = 0.1, size = 0.1,
+    # Draw point instead of square symbol
+    key_glyph = draw_key_dotplot
   ) +
-  # Add ggiraph column, don't show it in legend as we're using points (and not 
+  # Add ggiraph column, don't show it in legend as we're using points (and not
   # squares) according to the style guide there (see hack before)
-  geom_col_interactive(color = "white", show.legend = FALSE) + 
+  geom_col_interactive(color = "white", show.legend = FALSE) +
   scale_fill_manual(values = get_datastory_scheme()) +
-  get_datastory_theme(tick_axis = c("y"), 
-                      remove_plot_margin = TRUE)
+  get_datastory_theme(
+    tick_axis = c("y"),
+    remove_plot_margin = TRUE
+  )
 
 # Create ggiraph object
-girafe(ggobj = ggplot_plot, 
-       height_svg = 3.5, 
-       options = list(
-         opts_toolbar(saveaspng = FALSE),
-         opts_hover(css = "fill:#F08262;stroke:white;"),
-         opts_tooltip(
-           css = get_ggiraph_tooltip_css(),
-           opacity = 0.8,
-           delay_mouseover = 0,
-           delay_mouseout = 0
-         )
-       ))
+girafe(
+  ggobj = ggplot_plot,
+  height_svg = 3.5,
+  options = list(
+    opts_toolbar(saveaspng = FALSE),
+    opts_hover(css = "fill:#F08262;stroke:white;"),
+    opts_tooltip(
+      css = get_ggiraph_tooltip_css(),
+      opacity = 0.8,
+      delay_mouseover = 0,
+      delay_mouseout = 0
+    )
+  )
+)
 ```
 
 <div class="caption">
@@ -246,3 +267,16 @@ Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie co
 </p>
 
 Daten, Text und Code dieser Datengeschichte sind <a href="https://github.com/snsf-data/datastory_xxx" target="_blank">auf Github verfügbar</a> und <a href="https://doi.org/10.46446/datastory.xxx" target="_blank">auf Zenodo archiviert</a>. DOI: 10.46446/datastory.xxx
+
+```{r prevent-internal-snsf-packages, include=FALSE}
+# Internal SNSF packages must not be used in data stories, as their
+# pre-processing functions are internal and the corporate design differs from
+# the data portal.
+if (any(c("snfverse", "snf.preprocessing", "snf.plot") %in% 
+        loadedNamespaces())) {
+  stop(glue(
+    "You must not use internal SNSF packages in data stories.",
+    " Please resort to snf.datastory."
+  ))
+}
+```
