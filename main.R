@@ -28,13 +28,13 @@ datastory_name_de <- "datastory-vorlage"
 datastory_name_fr <- "datastory-modele"
 
 # English title and lead of the story (Mandatory, even if no EN version)
-title_en <- "Title"
+title_en <- "Template Title"
 lead_en <- "English lead of story"
 # German title and lead of the story (Mandatory, even if no DE version)
-title_de <- "Titel"
+title_de <- "Template Titel"
 lead_de <- "Deutscher Lead der Story"
 # French title and lead of the story (Mandatory, even if no FR version)
-title_fr <- "Titre"
+title_fr <- "Template Titre"
 lead_fr <- "Story lead en français"
 # Contact persons, always (first name + last name)
 contact_person <- c("Anna Müller", "Hans Meier")
@@ -55,12 +55,12 @@ feature_story <- FALSE
 # e.g. https://doi.org/10.46446/datastory.leaky-pipeline
 doi_url <- ""
 # URL to Github page (optional)
-github_url <- ""
+github_url <- paste0("https://github.com/snsf-data/datastory_", datastory_name)
 # Put Tag IDs here. Only choose already existing tags.
 tags_ids <- c(
-  60, # gender equality
-  70, # promotion of young researchers
-  80
+  # 60 gender equality
+  # 70 promotion of young researchers
+  # 80 project funding
 ) # project funding
 
 # IMPORTANT: Put a title image (as .jpg) into the output directory.
@@ -80,6 +80,7 @@ if (!require("snf.datastory")) {
 library(tidyverse)
 library(scales)
 library(conflicted)
+library(glue)
 library(jsonlite)
 library(here)
 
@@ -100,20 +101,83 @@ is_valid <- function(param_value) {
   return(TRUE)
 }
 
+all_params <-
+  c(
+    "datastory_name", "title_en", "title_de", "title_fr", "datastory_category",
+    "publication_date", "languages", "lead_en", "lead_de", "lead_fr", "doi_url",
+    "github_url", "tags_ids"
+  )
+
+are_params_valid <-
+  c(
+    !is_valid(datastory_name),
+    !is_valid(title_en),
+    !is_valid(title_de),
+    !is_valid(title_fr),
+    !is_valid(datastory_category),
+    !is_valid(publication_date),
+    mean(c("en", "de", "fr") %in% (languages)) < 1,
+    !is_valid(lead_en),
+    !is_valid(lead_de),
+    !is_valid(lead_fr),
+    !is_valid(doi_url),
+    !is_valid(github_url),
+    length(tags_ids) == 0
+  )
+
 # Validate parameters and throw error message when not correctly filled
-if (any(
-  !is_valid(datastory_name),
-  !is_valid(title_en),
-  !is_valid(title_de),
-  !is_valid(title_fr),
-  !is_valid(datastory_category),
-  !is_valid(publication_date),
-  length(languages) < 1,
-  !is_valid(lead_en),
-  !is_valid(lead_de),
-  !is_valid(lead_fr)
-)) {
-  stop("Incorrect value for at least one of the mandatory metadata values.")
+if (any(are_params_valid)) {
+  stop(
+    paste0(
+      "\nIncorrect value for the following mandatory metadata values:\n",
+      "- ", paste0(all_params[are_params_valid], collapse = "\n- ")
+    )
+  )
+}
+
+# Check that the github repo is not
+if (github_url == "https://github.com/snsf-data/datastory_template_datastory") {
+  stop(
+    "\nThe link to the Github repository corresponds to the placeholder from ",
+    "the template. Please enter a valid link before continuing."
+  )
+}
+
+# Check titles/leads length and throw an error when they are too long
+too_long <-
+  c(
+    c(nchar(title_en), nchar(title_de), nchar(title_fr)) > 90,
+    c(nchar(lead_en), nchar(lead_de), nchar(lead_fr)) > 230
+  )
+
+which_too_long <-
+  c(
+    "title_en", "title_de", "title_fr", "lead_en", "lead_de", "lead_fr"
+  )[too_long]
+
+if (any(too_long)) {
+  stop(
+    paste0(
+      "\nTitle and leads should not exceed 230 and 90 characters, ",
+      "respecrively. The following parameters are too long:\n",
+      "- ", paste0(which_too_long, collapse = "\n- ")
+    )
+  )
+}
+
+# Check whether an image exists and throw a warning if there is a png or no
+# image at all.
+if (length(grep("jpg$", list.files(here("output", datastory_name)))) == 0){
+  warning(
+    "It seems like there is no title image in 'output/", datastory_name, "'."
+  )
+}
+if (length(grep("png$", list.files(here("output", datastory_name)))) != 0){
+  warning(
+    paste0(
+      "It seems like the title image in 'output/", datastory_name, "' ",
+      "is a .png file. Only .jpg file should be provided.")
+  )
 }
 
 # Create output directory in main directory
@@ -150,35 +214,27 @@ tibble(
 # Knit HTML output for each language version
 for (idx in seq_len(length(languages))) {
   current_lang <- languages[idx]
+  filename <- paste0(
+    str_replace_all(
+      get(paste0("datastory_name_", current_lang)), "_", "-"
+    ),
+    "-", current_lang, ".html"
+  )
   output_file <- here(
     "output", datastory_name,
-    paste0(
-      str_replace_all(
-        get(paste0("datastory_name_", current_lang)), "_", "-"
-      ),
-      "-", current_lang, ".html"
-    )
+    filename
   )
   print(paste0("Generating output for ", current_lang, " version..."))
-  rmarkdown::render(
-    input = here(paste0(current_lang, ".Rmd")),
-    output_file = output_file,
-    params = list(
+  quarto::quarto_render(
+    input = here(paste0(current_lang, ".qmd")),
+    output_file = filename,
+    execute_params = list(
       title = get(paste0("title_", current_lang)),
       publication_date = publication_date,
-      doi = doi_url
-    ),
-    envir = new.env()
+      github_url = github_url,
+      doi = doi_url,
+      lang = current_lang
+    )
   )
-
-  # # Generate raw text version of each story for the search feature
-  # readLines(output_file)
-
-  # # inputFile <- "
-  # con  <- file(output_file, open = "r")
-  # while (length(oneLine <- readLines(con, n = 1)) > 0) {
-  #   myLine <- unlist((strsplit(oneLine, ",")))
-  #   print(myLine)
-  # }
-  # close(con)
+  fs::file_move(path = here(filename),new_path = output_file)
 }
