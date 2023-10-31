@@ -30,8 +30,12 @@ editor_options:
 
 # Set general chunk options
 knitr::opts_chunk$set(
-  echo = FALSE, fig.showtext = TRUE, fig.retina = 3, fig.align = "center",
-  warning = FALSE, message = FALSE
+  echo = FALSE,
+  fig.showtext = TRUE,
+  fig.retina = 3,
+  fig.align = "center",
+  warning = FALSE,
+  message = FALSE
 )
 
 # Install snf.datastory package if not available, otherwise load it
@@ -75,7 +79,7 @@ if (is_theinhardt_available) {
   
   # Need to register the font to allow its use by ggiraph when creating SVG
   # files.
-  if(!font_family_exists("Theinhardt")){
+  if (!font_family_exists("Theinhardt")) {
     
     # Register existing/downloaded fonts
     register_font(
