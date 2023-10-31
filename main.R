@@ -61,7 +61,7 @@ tags_ids <- c(
   # 60 gender equality
   # 70 promotion of young researchers
   # 80 project funding
-) # project funding
+)
 
 # IMPORTANT: Put a title image (as .jpg) into the output directory.
 # example: "output/datastory-template.jpg"
@@ -122,11 +122,11 @@ are_params_valid <-
     !is_valid(lead_fr),
     !is_valid(doi_url),
     !is_valid(github_url),
-    length(tags_ids) == 0
+    length(tags_ids) > 0
   )
 
 # Validate parameters and throw error message when not correctly filled
-if (any(are_params_valid)) {
+if (any(are_valid)) {
   stop(
     paste0(
       "\nIncorrect value for the following mandatory metadata values:\n",
@@ -146,33 +146,31 @@ if (github_url == "https://github.com/snsf-data/datastory_template_datastory") {
 # Check titles/leads length and throw an error when they are too long
 too_long <-
   c(
-    c(nchar(title_en), nchar(title_de), nchar(title_fr)) > 90,
-    c(nchar(lead_en), nchar(lead_de), nchar(lead_fr)) > 230
+    c(nchar(title_en), nchar(title_de), nchar(title_fr)) > 230,
+    c(nchar(lead_en), nchar(lead_de), nchar(lead_fr)) > 90
   )
 
 which_too_long <-
-  c(
-    "title_en", "title_de", "title_fr", "lead_en", "lead_de", "lead_fr"
-  )[too_long]
+  c("title_en", "title_de", "title_fr", "lead_en", "lead_de", "lead_fr")[too_long]
 
 if (any(too_long)) {
-  stop(
+  warning(
     paste0(
-      "\nTitle and leads should not exceed 230 and 90 characters, ",
-      "respecrively. The following parameters are too long:\n",
-      "- ", paste0(which_too_long, collapse = "\n- ")
+      "\nTitle and leads should not exceed 230 and 90 characters, respecrively. ",
+      "The following parameters might be too long to fit in SNSF Data Portal ",
+      "tiles:\n- ", paste0(which_too_long, collapse = "\n- ")
     )
   )
 }
 
 # Check whether an image exists and throw a warning if there is a png or no
 # image at all.
-if (length(grep("jpg$", list.files(here("output", datastory_name)))) == 0){
+if (length(grep("jpg$", list.files(here("output", datastory_name)))) == 0) {
   warning(
     "It seems like there is no title image in 'output/", datastory_name, "'."
   )
 }
-if (length(grep("png$", list.files(here("output", datastory_name)))) != 0){
+if (length(grep("png$", list.files(here("output", datastory_name)))) != 0) {
   warning(
     paste0(
       "It seems like the title image in 'output/", datastory_name, "' ",
